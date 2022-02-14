@@ -2,7 +2,9 @@ import tkinter
 from tkinter import ttk
 import os, sys
 import datetime
+from functools import partial
 
+# Resetting the system path.
 script_path = os.path.realpath(os.path.dirname(__name__))
 os.chdir(script_path)
 sys.path.append("..")
@@ -15,13 +17,16 @@ BACKGROUND_COLOR = 'white'
 class MainScreen(tkinter.Tk):
     def __init__(self):
         super().__init__()
-
+        """This class inherits everything from tkinter.Tk and is responsible for creating a main screen,
+        it takes user inputs and send it to controller class."""
+        # Initialize main screen controller.
         self.controller = main_screen_controller.MainScreenController()
         self.geometry('1500x800')
-        self.years_before_now = [datetime.datetime.now().year - year for year in range(0, 41)]
         self.dividend_frequency = ['monthly', 'Quarterly', 'yearly']
         self.investing_frequency = ['weekly', 'monthly', 'Quarterly', 'yearly']
-        self.investment_data = []
+        self.entry_boxes = []
+        self.comboboxes = []
+        self.years_before_now = [datetime.datetime.now().year - year for year in range(0, 41)]
         self.years_before_now.reverse()
 
         # Set the screen to not resizable.
@@ -29,7 +34,7 @@ class MainScreen(tkinter.Tk):
 
         # Row 1 content
         self.show_label("Investing Title:", 0, 0)
-        self.show_entry_box(0, 1)
+        (self.show_entry_box(0, 1))
 
         # Row 2
         self.message = "Please enter the following information for the investment"
@@ -71,21 +76,52 @@ class MainScreen(tkinter.Tk):
         self.show_button("Calculate", 7, 0)
 
     def show_label(self, text, row, col, columnspan=1):
+        """
+        Creates a label and display it on the screen
+        :param row: label row index
+        :param col: label row index
+        """
         tkinter.Label(self, text=text, bg=BACKGROUND_COLOR,
                       font=('Arial', 10, 'bold')).grid(row=row, column=col, columnspan=columnspan)
 
     def show_entry_box(self, row, col):
-        tkinter.Entry(self, width=20, justify='center').grid(row=row, column=col)
+        """
+        Creates a entry box and display it on the screen
+        :param row: entry box row index
+        :param col: entry box row index
+        """
+        entry_box = tkinter.Entry(self, width=20, justify='center')
+        entry_box.grid(row=row, column=col)
+        self.entry_boxes.append(entry_box)
 
     def show_combobox(self, row, col, value):
+        """
+        Creates a combobox and display it on the screen
+        :param row: combobox row index
+        :param col: combobox coloumn index
+        :param value: combobox text value in a list.
+        """
         frequency_box = ttk.Combobox(self, value=value, justify='center')
-        frequency_box.set(f"{value[0]}")
+        frequency_box.set("")
         frequency_box.grid(row=row, column=col)
+        self.comboboxes.append(frequency_box)
 
     def show_button(self, text, row, col):
-        tkinter.Button(self, text=text, width=20, justify='center', command=lambda: [self.get_data_to_controller()]).grid(
-            row=row,
-            column=col)
+        """
+        Creates a button and display it on the screen
+        :param row: button row index
+        :param col: button coloumn index
+        :param text: button text
+        """
+        button = tkinter.Button(self, text=text, width=20, justify='center',
+                                command=lambda: [self.get_entry_data_to_controller(),
+                                                 self.get_result_from_controller()])
+        button.grid(row=row, column=col)
 
-    def get_data_to_controller(self):
-        self.controller.get_investment_data(self.investment_data)
+    def get_entry_data_to_controller(self):
+        """Sends user input data to controller"""
+        self.controller.get_investment_data([self.entry_boxes, self.comboboxes])
+
+    def get_result_from_controller(self):
+        """Receives data from controller."""
+        self.controller.get_result()
