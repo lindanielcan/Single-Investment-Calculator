@@ -4,10 +4,10 @@ from model import investment_data
 
 
 class Calculator:
-    def __init__(self):
+    def __init__(self, investment_data):
         """Calculator calculates investment data."""
         self.current_year = datetime.now().year
-        self.investment_data = investment_data.InvestmentData()
+        self.investment_data = investment_data
 
     def is_leap_year(self, year):
         """
@@ -40,21 +40,19 @@ class Calculator:
     def get_yearly_average_growth_rate(self):
         """Calculates average growth rate of an investment."""
         # GR = [(ending value) / (beginning value)] ^ (1 / n) - 1
-        number_of_years = self.current_year - self.investment_data.investment_start_year
-        yearly_growth_rate = (
-                                     self.investment_data.investment_current_price - self.investment_data.investment_start_year_price) ** (
-                                     1 / number_of_years) - 1
-        return yearly_growth_rate
 
-    def get_weekly_average_growth_rate(self):
-        """Returns average weekly growth rate"""
-        return self.get_yearly_average_growth_rate() / (
-                self.get_days() / self.investment_data.investment_intended_years / 7)
+        number_of_years = float(self.current_year) - self.investment_data.investment_start_year
+        # print(f"number of years: {number_of_years}")
+        # print("here: ",(self.investment_data.investment_current_price - self.investment_data.investment_start_year_price) ** (
+        #         1 / number_of_years) - 1)
+        return (self.investment_data.investment_current_price / self.investment_data.investment_start_year_price) ** (
+                1 / number_of_years) - 1
 
     def get_days(self):
         """Returns the number of days that is equal to the years of intended investment."""
         total_of_days = 0
-        for year in range(0, self.investment_data.investment_intended_years):
+
+        for year in range(0, (self.investment_data.investment_intended_years)):
             if self.is_leap_year(self.current_year + year):
                 total_of_days += 366
             else:
@@ -65,16 +63,65 @@ class Calculator:
         """Calculates investment total return from the data received"""
         total_investment_return = 0
         days = self.get_days()
-        for day in range(1, days + 1):
-            # when day % 7 == 0, its a week.
-            if day % 7 == 0:
-                total_investment_return += self.investment_data.investment_amount_by_frequency * (
-                        (self.get_weekly_average_growth_rate() + 1) ** (days - day))
-            # when day % 30 == 0, its a season.
-            if day % 91 == 0:
-                pass
-            # when day % 365 == 0, its a year.
-            if day % 365 == 0:
-                pass
 
+        # Different investing case scenarios
+        # user invests weekly
+        if self.investment_data.investment_frequency == 'weekly':
+            total_investment_return = self.calculate_weekly_investment(days, 7, 52)
+        # user invests bi-weekly
+        elif self.investment_data.investment_frequency == 'bi-weekly':
+            total_investment_return = self.calculate_weekly_investment(days, 14, 26)
+        # user invests monthly
+        elif self.investment_data.investment_frequency == 'monthly':
+            total_investment_return = self.calculate_weekly_investment(days, 30, 12)
+        # user invests bi-monthly
+        elif self.investment_data.investment_frequency == 'bi-monthly':
+            total_investment_return = self.calculate_weekly_investment(days, 61, 6)
+        # user invests quarterly
+        elif self.investment_data.investment_frequency == 'Quarterly':
+            total_investment_return = self.calculate_weekly_investment(days, 91, 4)
+        # user invests yearly
+        elif self.investment_data.investment_frequency == 'yearly':
+            total_investment_return = self.calculate_weekly_investment(days, 365, 1)
+
+        return total_investment_return
+
+    def calculate_weekly_investment(self, days, investment_frequency, number_average_growth_rate_per_frequency):
+        """Returns total investment return when user invest weekly"""
+        total_investment_return = 0
+        for day in range(0, days):
+            # The total investment will be compounded by dividend, and it may slightly vary bases on how dividend is
+            # being paid.
+            if day % investment_frequency == 0:
+                total_investment_return += self.investment_data.investment_amount_by_frequency * (
+                        ((self.get_yearly_average_growth_rate() / number_average_growth_rate_per_frequency) + 1) ** (
+                        (days - day) / investment_frequency))
+            # Every 365 days, the users pays certain amount of fees(etf,..) bases the amount of total value they are
+            # holding.
+            if day % 365 == 0:
+                total_investment_return = self.investment_return_with_expense_ratio(total_investment_return)
+
+            total_investment_return = self.investment_return_with_dividend(total_investment_return, day)
+
+        return total_investment_return
+
+    def investment_return_with_dividend(self, total_investment_return, day):
+        """Conpound the investment with dividend."""
+        if self.investment_data.investment_dividend_yield != 0:
+            if self.investment_data.investment_divident_frequency == 'monthly':
+                if day % 30 == 0:
+                    total_investment_return *= ((self.investment_data.investment_dividend_yield / 12) + 1)
+            elif self.investment_data.investment_divident_frequency == 'Quarterly':
+                if day % 91 == 0:
+                    total_investment_return *= ((self.investment_data.investment_dividend_yield / 4) + 1)
+            elif self.investment_data.investment_divident_frequency == 'yearly':
+                if day % 365 == 0:
+                    total_investment_return *= ((self.investment_data.investment_dividend_yield / 1) + 1)
+
+        return total_investment_return
+
+    def investment_return_with_expense_ratio(self, total_investment_return):
+        """Calculates total return after paying for fees"""
+        if self.investment_data.investment_expense_ratio != 0:
+            total_investment_return *= (1 - self.investment_data.investment_expense_ratio)
         return total_investment_return
