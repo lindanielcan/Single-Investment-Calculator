@@ -1,7 +1,7 @@
 class InvestmentData:
     def __init__(self):
         """This class manages data."""
-        self.data = []
+        self.data = {}
         self.investment_title = ''
         self.investment_start_year = 0
         self.investment_start_year_price = 0
@@ -15,14 +15,13 @@ class InvestmentData:
 
     def parse_data(self, data):
         """Gets the data from the controller and parse it."""
-        self.data = (data)
-        self.investment_title = self.data[0][0].get()
-        self.investment_start_year = self.data[1][0].get()
-        self.investment_start_year_price = self.data[0][1].get()
-        self.investment_current_price = self.data[0][2].get()
-        self.investment_dividend_yield = self.data[0][3].get()
-        self.investment_divident_frequency = self.data[1][1].get()
-        self.investment_expense_ratio = self.data[0][4].get()
-        self.investment_frequency = self.data[1][2].get()
-        self.investment_amount_by_frequency = self.data[0][5].get()
-        self.investment_intended_years = self.data[0][6].get()
+        self.investment_title = data[0][0].get()
+        self.investment_start_year = int(data[1][0].get())
+        self.investment_start_year_price = float(data[0][1].get())
+        self.investment_current_price = float(data[0][2].get())
+        self.investment_dividend_yield = float(data[0][3].get())
+        self.investment_divident_frequency = (data[1][1].get())
+        self.investment_expense_ratio = float(data[0][4].get())
+        self.investment_frequency = data[1][2].get()
+        self.investment_amount_by_frequency = float(data[0][5].get())
+        self.investment_intended_years = int(data[0][6].get())
