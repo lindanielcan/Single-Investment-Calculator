@@ -6,11 +6,12 @@ class MainScreenController:
     def __init__(self):
         """This class receives data from the main screen, sends data to model files,
         and receives results from calculator class."""
-        self.calculator = calculator.Calculator()
+
         self.investment_data = investment_data.InvestmentData()
+        self.calculator = calculator.Calculator(self.investment_data)
 
     def get_investment_data(self, data):
-        """Send data."""
+        """parse data and send it to calculator"""
         self.investment_data.parse_data(data)
 
     def get_result(self):
