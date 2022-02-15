@@ -21,9 +21,10 @@ class MainScreen(tkinter.Tk):
         it takes user inputs and send it to controller class."""
         # Initialize main screen controller.
         self.controller = main_screen_controller.MainScreenController()
-        self.geometry('1500x800')
+        self.title('Single Investment Calculator')
+        self.geometry('1000x500')
         self.dividend_frequency = ['monthly', 'Quarterly', 'yearly']
-        self.investing_frequency = ['weekly', 'monthly', 'Quarterly', 'yearly']
+        self.investing_frequency = ['weekly', 'bi-weekly', 'monthly', 'bi-monthly', 'Quarterly', 'yearly']
         self.entry_boxes = []
         self.comboboxes = []
         self.years_before_now = [datetime.datetime.now().year - year for year in range(0, 41)]
