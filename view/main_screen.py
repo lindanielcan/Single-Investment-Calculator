@@ -36,6 +36,7 @@ class MainScreen(tkinter.Tk):
         # Row 1 content
         self.show_label("Investing Title:", 0, 0)
         (self.show_entry_box(0, 1))
+        self.show_button('Update', 0, 1)
 
         # Row 2
         self.message = "Please enter the following information for the investment"
@@ -131,3 +132,7 @@ class MainScreen(tkinter.Tk):
     def get_result_from_controller(self):
         """Receives data from controller."""
         self.controller.get_result()
+
+    def update_investment_data(self):
+        """Automatically Show investment data on the screen."""
+        pass
