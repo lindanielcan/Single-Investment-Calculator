@@ -39,12 +39,7 @@ class Calculator:
 
     def get_yearly_average_growth_rate(self):
         """Calculates average growth rate of an investment."""
-        # GR = [(ending value) / (beginning value)] ^ (1 / n) - 1
-
         number_of_years = float(self.current_year) - self.investment_data.investment_start_year
-        # print(f"number of years: {number_of_years}")
-        # print("here: ",(self.investment_data.investment_current_price - self.investment_data.investment_start_year_price) ** (
-        #         1 / number_of_years) - 1)
         return (self.investment_data.investment_current_price / self.investment_data.investment_start_year_price) ** (
                 1 / number_of_years) - 1
 
@@ -102,6 +97,8 @@ class Calculator:
                 total_investment_return = self.investment_return_with_expense_ratio(total_investment_return)
 
             total_investment_return = self.investment_return_with_dividend(total_investment_return, day)
+
+        print(f"The estimated average annual growth rate with the dividend would be {self.get_yearly_average_growth_rate() * (self.investment_data.investment_dividend_yield + 1)}")
 
         return total_investment_return
 
