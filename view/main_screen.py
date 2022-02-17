@@ -2,7 +2,7 @@ import tkinter
 from tkinter import ttk
 import os, sys
 import datetime
-from functools import partial
+from tkinter import messagebox
 
 # Resetting the system path.
 script_path = os.path.realpath(os.path.dirname(__name__))
@@ -121,7 +121,12 @@ class MainScreen(tkinter.Tk):
 
     def get_entry_data_to_controller(self):
         """Sends user input data to controller"""
-        self.controller.get_investment_data([self.entry_boxes, self.comboboxes])
+        data = [self.entry_boxes, self.comboboxes]
+        if self.controller.is_all_entry_boxes_filled(data):
+            messagebox.showwarning("Empty text box", "Please fill all the text entries.")
+        else:
+            if self.controller.is_float(data, messagebox):
+                self.controller.get_investment_data(data)
 
     def get_result_from_controller(self):
         """Receives data from controller."""
