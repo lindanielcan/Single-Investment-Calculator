@@ -98,20 +98,21 @@ class Calculator:
 
             total_investment_return = self.investment_return_with_dividend(total_investment_return, day)
 
-        print(f"The estimated average annual growth rate with the dividend would be {self.get_yearly_average_growth_rate() * (self.investment_data.investment_dividend_yield + 1)}")
+        print(
+            f"The estimated average annual growth rate with the dividend would be {round((self.get_yearly_average_growth_rate() * (self.investment_data.investment_dividend_yield + 1)), 4) * 100}%")
 
         return total_investment_return
 
     def investment_return_with_dividend(self, total_investment_return, day):
         """Conpound the investment with dividend."""
         if self.investment_data.investment_dividend_yield != 0:
-            if self.investment_data.investment_divident_frequency == 'monthly':
+            if self.investment_data.investment_divident_frequency == 'monthly'.title():
                 if day % 30 == 0:
                     total_investment_return *= ((self.investment_data.investment_dividend_yield / 12) + 1)
-            elif self.investment_data.investment_divident_frequency == 'Quarterly':
+            elif self.investment_data.investment_divident_frequency == 'Quarterly'.title():
                 if day % 91 == 0:
                     total_investment_return *= ((self.investment_data.investment_dividend_yield / 4) + 1)
-            elif self.investment_data.investment_divident_frequency == 'yearly':
+            elif self.investment_data.investment_divident_frequency == 'yearly'.title():
                 if day % 365 == 0:
                     total_investment_return *= ((self.investment_data.investment_dividend_yield / 1) + 1)
 
