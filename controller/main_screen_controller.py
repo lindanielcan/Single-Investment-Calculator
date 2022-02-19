@@ -17,7 +17,6 @@ class MainScreenController:
 
     def get_result(self):
         """Gets data from the calculator class and sends it main screen."""
-        print(self.calculator.calculate_investment_total_return())
         return self.calculator.calculate_investment_total_return()
 
     def is_all_entry_boxes_filled(self, data):
@@ -32,6 +31,9 @@ class MainScreenController:
         new_data = [item.get() for item in data[0]]
         new_data.pop(0)
         new_data.append(data[1][0].get())
+        new_data[2] = new_data[2].strip('%')
+        new_data[3] = new_data[3].strip('%')
+
         try:
             for item in new_data:
                 item = float(item)
@@ -39,3 +41,29 @@ class MainScreenController:
             messagebox.showwarning("Please check the value", "Please check the value you inputted.")
         else:
             return True
+
+    def get_investment_title(self, title):
+        """
+        Gets investment title from the main screen and send it to investment_data
+        :param title: investment_title
+        :return: a dictionary containing investment information
+        """
+        # If the title entry is empty, prompt a window telling the user to enter the investment title.
+        self.investment_data.investment_title = title
+
+    def is_title_valid(self, title, message_box):
+        """Checks to see if the investment title is valid or not"""
+        if len(title) != 0 and self.investment_data.get_investment_data() == False:
+            message_box.showwarning("Invalid investment title",
+                                    "Please enter a valid investment title or enter following information manually")
+
+    def get_investment_information(self):
+        """Send investment data from investment_data to the screen"""
+
+        return self.investment_data.get_investment_data()
+
+    def is_entry_box_empty(self, title, message_box):
+        """Checks to see if the investment title entry box is emptry or not, if yes, send a message"""
+
+        if len(title) == 0:
+            message_box.showwarning("Empty entry", "In order to update investment data, please enter investment title")
