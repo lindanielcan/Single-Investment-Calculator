@@ -3,6 +3,7 @@ from tkinter import ttk
 import os, sys
 import datetime
 from tkinter import messagebox
+from functools import partial
 
 # Resetting the system path.
 script_path = os.path.realpath(os.path.dirname(__name__))
@@ -22,60 +23,67 @@ class MainScreen(tkinter.Tk):
         # Initialize main screen controller.
         self.controller = main_screen_controller.MainScreenController()
         self.title('Single Investment Calculator')
-        self.geometry('1000x500')
-        self.dividend_frequency = ['monthly', 'Quarterly', 'yearly']
+        self.geometry('1300x500')
+        self.dividend_frequency = ['Monthly', 'Quarterly', 'Yearly']
         self.investing_frequency = ['weekly', 'bi-weekly', 'monthly', 'bi-monthly', 'Quarterly', 'yearly']
         self.entry_boxes = []
         self.comboboxes = []
+        self.buttons = []
         self.years_before_now = [datetime.datetime.now().year - year for year in range(0, 41)]
         self.years_before_now.reverse()
 
-        # Set the screen to not resizable.
+        # Disable screen resizable feature.
         self.resizable(False, False)
 
-        # Row 1 content
-        self.show_label("Investing Title:", 0, 0)
-        (self.show_entry_box(0, 1))
-        self.show_button('Update', 0, 1)
+        self.label_info = [
+            {"message": "Investing Title:", "row": 0, "column": 0},
+            {"message": "Please enter the following information for the investment", "row": 1, "column": 0,
+             "columnspan": 5},
+            {"message": "Start Year:", "row": 2, "column": 0},
+            {"message": "Start year Price:", "row": 2, "column": 2},
+            {"message": "Current Price", "row": 2, "column": 4},
+            {"message": "Dividend Yield:", "row": 3, "column": 0},
+            {"message": "Dividend Yield Frequency:", "row": 3, "column": 2},
+            {"message": "Expense Ratio:", "row": 4, "column": 0},
+            {"message": "Investing Frequency:", "row": 5, "column": 0},
+            {"message": "Investing Amount By Frequency", "row": 5, "column": 2},
+            {"message": "Intended year of investing: ", "row": 6, "column": 0},
+        ]
 
-        # Row 2
-        self.message = "Please enter the following information for the investment"
-        self.show_label(self.message, 1, 0, 5)
+        self.entry_box_info = [
+            {"row": 0, "column": 1},
+            {"row": 2, "column": 3},
+            {"row": 2, "column": 5},
+            {"row": 3, "column": 1},
+            {"row": 4, "column": 1},
+            {"row": 5, "column": 3},
+            {"row": 6, "column": 1}
+        ]
 
-        # Row 3
-        self.show_label("Start Year:", 2, 0)
-        self.show_combobox(2, 1, self.years_before_now)
+        self.combobox_info = [
+            {"value": self.years_before_now, "row": 2, "column": 1},
+            {"value": self.dividend_frequency, "row": 3, "column": 3},
+            {"value": self.investing_frequency, "row": 5, "column": 1},
+        ]
 
-        self.show_label("Start year Price:", 2, 2)
-        self.show_entry_box(2, 3)
+        self.buttons_info = [
+            {"message": "Update", "row": 0, "column": 2, "button_index": 0},
+            {"message": "Calculate", "row": 7, "column": 0, "button_index": 1},
+            {"message": "Reset", "row": 7, "column": 1, "button_index": 2}
+        ]
 
-        self.show_label("Current Price:", 2, 4)
-        self.show_entry_box(2, 5)
+        for label in self.label_info:
+            self.show_label(label['message'], label['row'], label['column'])
 
-        # Row 4
-        self.show_label("Dividend Yield:", 3, 0)
-        self.show_entry_box(3, 1)
+        for entry_box in self.entry_box_info:
+            self.show_entry_box(entry_box['row'], entry_box['column'])
 
-        self.show_label("Dividend Yield Frequency:", 3, 2)
-        self.show_combobox(3, 3, self.dividend_frequency)
+        for combobox in self.combobox_info:
+            self.show_combobox(combobox['value'], combobox['row'], combobox['column'])
 
-        # Row 5
-        self.show_label("Expense Ratio:", 4, 0)
-        self.show_entry_box(4, 1)
-
-        # Row 6
-        self.show_label("Investing Frequency:", 5, 0)
-        self.show_combobox(5, 1, self.investing_frequency)
-
-        self.show_label("Investing Amount By Frequency", 5, 2)
-        self.show_entry_box(5, 3)
-
-        # Row 7
-        self.show_label("Intended year of investing: ", 6, 0)
-        self.show_entry_box(6, 1)
-
-        # Row 8
-        self.show_button("Calculate", 7, 0)
+        for button in range(0, len(self.buttons_info)):
+            self.show_button(self.buttons_info[button]['message'], self.buttons_info[button]['row'],
+                             self.buttons_info[button]['column'], self.buttons_info[button]['button_index'])
 
     def show_label(self, text, row, col, columnspan=1):
         """
@@ -96,7 +104,7 @@ class MainScreen(tkinter.Tk):
         entry_box.grid(row=row, column=col)
         self.entry_boxes.append(entry_box)
 
-    def show_combobox(self, row, col, value):
+    def show_combobox(self, value, row, col):
         """
         Creates a combobox and display it on the screen
         :param row: combobox row index
@@ -108,7 +116,7 @@ class MainScreen(tkinter.Tk):
         frequency_box.grid(row=row, column=col)
         self.comboboxes.append(frequency_box)
 
-    def show_button(self, text, row, col):
+    def show_button(self, text, row, col, i):
         """
         Creates a button and display it on the screen
         :param row: button row index
@@ -116,23 +124,60 @@ class MainScreen(tkinter.Tk):
         :param text: button text
         """
         button = tkinter.Button(self, text=text, width=20, justify='center',
-                                command=lambda: [self.get_entry_data_to_controller(),
-                                                 self.get_result_from_controller()])
+                                command=lambda: self.OnButtonClick(i))
+
+        self.buttons.append(button)
         button.grid(row=row, column=col)
 
-    def get_entry_data_to_controller(self):
+    def OnButtonClick(self, n):
         """Sends user input data to controller"""
-        data = [self.entry_boxes, self.comboboxes]
-        if self.controller.is_all_entry_boxes_filled(data):
-            messagebox.showwarning("Empty text box", "Please fill all the text entries.")
-        else:
-            if self.controller.is_float(data, messagebox):
-                self.controller.get_investment_data(data)
+        if n == 0:
+            self.update_investment_data()
+        elif n == 1:
+            data = [self.entry_boxes, self.comboboxes]
+            if self.controller.is_all_entry_boxes_filled(data):
+                messagebox.showwarning("Empty text box", "Please fill all the text entries.")
+            else:
+                if self.controller.is_float(data, messagebox):
+                    self.controller.get_investment_data(data)
+
+            self.controller.get_result()
+        elif n == 2:
+            self.reset_widget_text()
+
 
     def get_result_from_controller(self):
         """Receives data from controller."""
         self.controller.get_result()
 
     def update_investment_data(self):
-        """Automatically Show investment data on the screen."""
-        pass
+        """Automatically update investment data on the screen."""
+
+        # Check if the investment title entry box is empty or not
+        self.controller.is_entry_box_empty(self.entry_boxes[0].get(), messagebox)
+
+        self.controller.get_investment_title(self.entry_boxes[0].get())
+
+        # Check if the investment title is valid or not.
+        self.controller.is_title_valid(self.entry_boxes[0].get(), messagebox)
+
+        # get automatic data from the internet.
+        data = self.controller.get_investment_information()
+
+        self.comboboxes[1].set(data['investment_divident_frequency'])
+        self.entry_boxes[3].delete('0', 'end')
+        self.entry_boxes[3].insert(0, data['investment_dividend_yield'])
+        self.entry_boxes[2].delete('0', 'end')
+        self.entry_boxes[2].insert(0, data['investment_current_price'])
+        self.entry_boxes[4].delete('0', 'end')
+        self.entry_boxes[4].insert(0, data['investment_expense_ratio'])
+
+    def reset_widget_text(self):
+        """
+        Resets widgets text values.
+        :return:
+        """
+        for text in self.entry_boxes:
+            text.delete('0', 'end')
+        for box in self.comboboxes:
+            box.set('')
