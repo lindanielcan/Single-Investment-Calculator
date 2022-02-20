@@ -17,3 +17,8 @@ Feature that I will work on next: <br/>
   user inputted with a chart.
 
 Photo demonstration will be provided once the project is completed.
+
+image sources:
+
+<a href="https://www.flaticon.com/free-icons/investment" title="investment icons">Investment icons created by justicon -
+Flaticon</a>
