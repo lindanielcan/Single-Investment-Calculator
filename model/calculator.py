@@ -95,11 +95,13 @@ class Calculator:
             # holding.
             if day % 365 == 0:
                 total_investment_return = self.investment_return_with_expense_ratio(total_investment_return)
-
-            total_investment_return = self.investment_return_with_dividend(total_investment_return, day)
+            if self.investment_data.investment_dividend_yield != 'n/a' and self.investment_data.investment_divident_frequency != 'n/a' and \
+                    self.investment_data.investment_divident_frequency != 'Unspecified':
+                total_investment_return = self.investment_return_with_dividend(total_investment_return, day)
 
         print(
-            f"The estimated average annual growth rate with the dividend would be {round((self.get_yearly_average_growth_rate() * (self.investment_data.investment_dividend_yield + 1)), 4) * 100}%")
+            f"The estimated average annual growth rate with the dividend would be "
+            f"{round((self.get_yearly_average_growth_rate() * (self.investment_data.investment_dividend_yield + 1)), 4) * 100}%")
 
         return total_investment_return
 
