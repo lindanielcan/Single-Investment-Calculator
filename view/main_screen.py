@@ -4,6 +4,8 @@ import os, sys
 import datetime
 from tkinter import messagebox
 from functools import partial
+from PIL import ImageTk, Image
+from view import result_screen
 
 # Resetting the system path.
 script_path = os.path.realpath(os.path.dirname(__name__))
@@ -12,7 +14,7 @@ sys.path.append("..")
 
 from controller import main_screen_controller
 
-BACKGROUND_COLOR = 'white'
+BACKGROUND_COLOR = '#BFFFF0'
 
 
 class MainScreen(tkinter.Tk):
@@ -23,7 +25,8 @@ class MainScreen(tkinter.Tk):
         # Initialize main screen controller.
         self.controller = main_screen_controller.MainScreenController()
         self.title('Single Investment Calculator')
-        self.geometry('1300x500')
+        self.geometry('600x500')
+        self.config(bg=BACKGROUND_COLOR)
         self.dividend_frequency = ['Monthly', 'Quarterly', 'Yearly']
         self.investing_frequency = ['weekly', 'bi-weekly', 'monthly', 'bi-monthly', 'Quarterly', 'yearly']
         self.entry_boxes = []
@@ -31,49 +34,67 @@ class MainScreen(tkinter.Tk):
         self.buttons = []
         self.years_before_now = [datetime.datetime.now().year - year for year in range(0, 41)]
         self.years_before_now.reverse()
+        self.result_screen = result_screen.ResultScreen(self)
+
+        # creats a canva to store and display an image.
+        self.my_canva = tkinter.Canvas(self, bg=BACKGROUND_COLOR, width=550, height=150,
+                                       highlightbackground=BACKGROUND_COLOR)
+        self.img = Image.open("view/images/investing.png")
+        self.img = self.img.resize((100, 100), Image.ANTIALIAS)
+        self.new_image = ImageTk.PhotoImage(self.img)
+        self.my_canva.create_image(240, 15, image=self.new_image, anchor='nw')
+        self.my_canva.grid(row=0, column=0, columnspan=2, padx=22.5)
 
         # Disable screen resizable feature.
         self.resizable(False, False)
 
+        # Storing label information in a list.
         self.label_info = [
-            {"message": "Investing Title:", "row": 0, "column": 0},
-            {"message": "Please enter the following information for the investment", "row": 1, "column": 0,
-             "columnspan": 5},
-            {"message": "Start Year:", "row": 2, "column": 0},
-            {"message": "Start year Price:", "row": 2, "column": 2},
-            {"message": "Current Price", "row": 2, "column": 4},
-            {"message": "Dividend Yield:", "row": 3, "column": 0},
-            {"message": "Dividend Yield Frequency:", "row": 3, "column": 2},
-            {"message": "Expense Ratio:", "row": 4, "column": 0},
-            {"message": "Investing Frequency:", "row": 5, "column": 0},
-            {"message": "Investing Amount By Frequency", "row": 5, "column": 2},
-            {"message": "Intended year of investing: ", "row": 6, "column": 0},
+            {"message": "Investing Title:", "row": 1, "column": 0},
+            {"message": "Please enter the following information for the investment", "row": 3, "column": 0,
+             "columnspan": 2},
+            {"message": "Start Year:", "row": 4, "column": 0},
+            {"message": "Start year Price:", "row": 5, "column": 0},
+            {"message": "Current Price", "row": 6, "column": 0},
+            {"message": "Dividend Yield:", "row": 7, "column": 0},
+            {"message": "Dividend Yield Frequency:", "row": 8, "column": 0},
+            {"message": "Expense Ratio:", "row": 9, "column": 0},
+            {"message": "Investing Frequency:", "row": 10, "column": 0},
+            {"message": "Investing Amount By Frequency", "row": 11, "column": 0},
+            {"message": "Intended year of investing: ", "row": 12, "column": 0},
         ]
 
+        # Storing entry box information in a list.
         self.entry_box_info = [
-            {"row": 0, "column": 1},
-            {"row": 2, "column": 3},
-            {"row": 2, "column": 5},
-            {"row": 3, "column": 1},
-            {"row": 4, "column": 1},
-            {"row": 5, "column": 3},
-            {"row": 6, "column": 1}
+            {"row": 1, "column": 1},
+            {"row": 5, "column": 1},
+            {"row": 6, "column": 1},
+            {"row": 7, "column": 1},
+            {"row": 9, "column": 1},
+            {"row": 11, "column": 1},
+            {"row": 12, "column": 1}
         ]
 
+        # Storing combo box information in a list.
         self.combobox_info = [
-            {"value": self.years_before_now, "row": 2, "column": 1},
-            {"value": self.dividend_frequency, "row": 3, "column": 3},
-            {"value": self.investing_frequency, "row": 5, "column": 1},
+            {"value": self.years_before_now, "row": 4, "column": 1},
+            {"value": self.dividend_frequency, "row": 8, "column": 1},
+            {"value": self.investing_frequency, "row": 10, "column": 1},
         ]
 
+        # Storing button information in a list.
         self.buttons_info = [
-            {"message": "Update", "row": 0, "column": 2, "button_index": 0},
-            {"message": "Calculate", "row": 7, "column": 0, "button_index": 1},
-            {"message": "Reset", "row": 7, "column": 1, "button_index": 2}
+            {"message": "Update", "row": 2, "column": 1, "button_index": 0},
+            {"message": "Calculate", "row": 13, "column": 0, "button_index": 1},
+            {"message": "Reset", "row": 13, "column": 1, "button_index": 2}
         ]
 
+        # running loops through lists to display widgets.
         for label in self.label_info:
-            self.show_label(label['message'], label['row'], label['column'])
+            if self.label_info.index(label) != 1:
+                self.show_label(label['message'], label['row'], label['column'])
+            else:
+                self.show_label(label['message'], label['row'], label['column'], label['columnspan'])
 
         for entry_box in self.entry_box_info:
             self.show_entry_box(entry_box['row'], entry_box['column'])
@@ -91,8 +112,8 @@ class MainScreen(tkinter.Tk):
         :param row: label row index
         :param col: label row index
         """
-        tkinter.Label(self, text=text, bg=BACKGROUND_COLOR,
-                      font=('Arial', 10, 'bold')).grid(row=row, column=col, columnspan=columnspan)
+        tkinter.Label(self, text=text, bg=BACKGROUND_COLOR, anchor="w",
+                      font=('Arial', 10, 'bold',)).grid(row=row, column=col, columnspan=columnspan)
 
     def show_entry_box(self, row, col):
         """
@@ -130,21 +151,27 @@ class MainScreen(tkinter.Tk):
         button.grid(row=row, column=col)
 
     def OnButtonClick(self, n):
-        """Sends user input data to controller"""
+        """Performs functions when a specific button is pressed."""
+        # Fills in investment data when update button is pressed.
         if n == 0:
             self.update_investment_data()
+
+            self.result_screen.open()
+        # Sends data from the screen to the controller when calculate button is pressed.
         elif n == 1:
             data = [self.entry_boxes, self.comboboxes]
+            # Checks if all the boxes were filled.
             if self.controller.is_all_entry_boxes_filled(data):
                 messagebox.showwarning("Empty text box", "Please fill all the text entries.")
             else:
+                # Validates data, if data is valid, then send it to controller.
                 if self.controller.is_float(data, messagebox):
                     self.controller.get_investment_data(data)
-
+            # Gets results from the controller.
             self.controller.get_result()
+
         elif n == 2:
             self.reset_widget_text()
-
 
     def get_result_from_controller(self):
         """Receives data from controller."""
