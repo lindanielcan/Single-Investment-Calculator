@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 class InvestmentData:
@@ -20,15 +20,20 @@ class InvestmentData:
         self.current_time = datetime.now().time()
         self.investment_data = {}
 
+        self.headers = {
+            'User-Agent':
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36'
+        }
+
     def parse_data(self, data):
         """Gets the data from the controller and parse it."""
         self.investment_title = data[0][0].get()
         self.investment_start_year = int(data[1][0].get())
         self.investment_start_year_price = float(data[0][1].get())
         self.investment_current_price = float(data[0][2].get())
-        self.investment_dividend_yield = float(data[0][3].get().strip('%'))/100
+        self.investment_dividend_yield = float(data[0][3].get().strip('%')) / 100
         self.investment_divident_frequency = (data[1][1].get())
-        self.investment_expense_ratio = float(data[0][4].get().strip('%'))/100
+        self.investment_expense_ratio = float(data[0][4].get().strip('%')) / 100
         self.investment_frequency = data[1][2].get()
         self.investment_amount_by_frequency = float(data[0][5].get())
         self.investment_intended_years = int(data[0][6].get())
@@ -38,13 +43,16 @@ class InvestmentData:
         Scrape https://stockanalysis.com/ to get stock data.
         :return: a list that contains stock data.
         """
+
         stock_type = 'stocks/'
         url = "https://stockanalysis.com/" + stock_type + self.investment_title + "/dividend/"
-        connection = requests.get(url)
+
+        connection = requests.get(url, headers=self.headers)
 
         if connection.status_code == 200:
             soup = BeautifulSoup(connection.text, 'html.parser')
             data = soup.find_all('div', 'mt-0.5 text-lg font-semibold bp:text-xl sm:mt-1.5 sm:text-2xl')
+
             if self.is_market_trading_hour():
                 stock_price = soup.find(name='div', class_='p')
             else:
@@ -52,7 +60,6 @@ class InvestmentData:
                 if stock_price == None:
                     stock_price = soup.find(name='div', class_='p')
             data = [datum.get_text() for datum in data]
-
             if len(data) == 0:
                 return False
             else:
@@ -63,7 +70,7 @@ class InvestmentData:
         elif connection.status_code == 404:
             stock_type = 'etf/'
             url = "https://stockanalysis.com/" + stock_type + self.investment_title + "/dividend"
-            connection = requests.get(url)
+            connection = requests.get(url, headers=self.headers)
             soup = BeautifulSoup(connection.text, 'html.parser')
             data = soup.find_all('div', 'mt-0.5 text-lg font-semibold bp:text-xl sm:mt-1.5 sm:text-2xl')
             data = [datum.get_text() for datum in data]
@@ -102,7 +109,7 @@ class InvestmentData:
         """Get the expense ratio for the investment."""
 
         url = "https://stockanalysis.com/etf/" + self.investment_title
-        new_connection = requests.get(url)
+        new_connection = requests.get(url, headers=self.headers)
 
         self.investment_data['investment_expense_ratio'] = ''
 
