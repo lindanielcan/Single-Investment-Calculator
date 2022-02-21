@@ -94,11 +94,13 @@ class Calculator:
             # Every 365 days, the users pays certain amount of fees(etf,..) bases the amount of total value they are
             # holding.
             if day % 365 == 0:
+                # print(total_investment_return)
                 total_investment_return = self.investment_return_with_expense_ratio(total_investment_return)
+                # print(total_investment_return)
             if self.investment_data.investment_dividend_yield != 'n/a' and self.investment_data.investment_divident_frequency != 'n/a' and \
                     self.investment_data.investment_divident_frequency != 'Unspecified':
-                total_investment_return = self.investment_return_with_dividend(total_investment_return, day)
 
+                total_investment_return = self.investment_return_with_dividend(total_investment_return, day)
         print(
             f"The estimated average annual growth rate with the dividend would be "
             f"{round((self.get_yearly_average_growth_rate() * (self.investment_data.investment_dividend_yield + 1)), 4) * 100}%")
