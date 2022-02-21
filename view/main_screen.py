@@ -144,7 +144,7 @@ class MainScreen(tkinter.Tk):
         :param col: button coloumn index
         :param text: button text
         """
-        button = tkinter.Button(self, text=text, width=20, justify='center',
+        button = tkinter.Button(self, text=text, width=10, justify='center',
                                 command=lambda: self.OnButtonClick(i))
 
         self.buttons.append(button)
