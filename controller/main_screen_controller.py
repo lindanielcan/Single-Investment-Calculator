@@ -63,7 +63,7 @@ class MainScreenController:
         return self.investment_data.get_investment_data()
 
     def is_entry_box_empty(self, title, message_box):
-        """Checks to see if the investment title entry box is emptry or not, if yes, send a message"""
+        """Checks to see if the investment title entry box is empty or not, if yes, send a message"""
 
         if len(title) == 0:
             message_box.showwarning("Empty entry", "In order to update investment data, please enter investment title")
