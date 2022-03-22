@@ -5,7 +5,7 @@ from datetime import datetime
 
 class InvestmentData:
     def __init__(self):
-        """This class manages data."""
+        """This class manages and scrapes data."""
         self.data = {}
         self.investment_title = ''
         self.investment_start_year = 0
@@ -20,6 +20,7 @@ class InvestmentData:
         self.current_time = datetime.now().time()
         self.investment_data = {}
 
+        # pass a default browser setting so the visiting site won't block the user from scraping data.
         self.headers = {
             'User-Agent':
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36'
@@ -49,7 +50,10 @@ class InvestmentData:
 
         connection = requests.get(url, headers=self.headers)
 
+        print(connection.status_code)
+
         if connection.status_code == 200:
+
             soup = BeautifulSoup(connection.text, 'html.parser')
             data = soup.find_all('div', 'mt-0.5 text-lg font-semibold bp:text-xl sm:mt-1.5 sm:text-2xl')
 
@@ -60,6 +64,7 @@ class InvestmentData:
                 if stock_price == None:
                     stock_price = soup.find(name='div', class_='p')
             data = [datum.get_text() for datum in data]
+
             if len(data) == 0:
                 return False
             else:
@@ -91,6 +96,7 @@ class InvestmentData:
         connection.close()
 
         self.get_expense_ratio()
+        # self.get_history_data()
 
         return self.investment_data
 
@@ -122,3 +128,20 @@ class InvestmentData:
 
         else:
             self.investment_data['investment_expense_ratio'] = 0
+
+    def get_history_data(self):
+        """Gets the price of the year for the investment."""
+
+        url = "https://www.macrotrends.net/stocks/charts/" + self.investment_title + "/at-t/stock-price-history"
+        new_connection = requests.get(url, headers=self.headers)
+
+        if new_connection.status_code == 200:
+            soup = BeautifulSoup(new_connection.text, 'html.parser')
+            # Storing all the historical price data into a list.
+            my_list = soup.find_all("td")
+            for item in my_list:
+                if "2010" in item:
+                    print(my_list[my_list.index(item) + 1].get_text().strip('>'))
+            # print(my_list)
+        else:
+            return None
