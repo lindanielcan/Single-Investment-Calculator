@@ -1,6 +1,6 @@
 from model import calculator
 from model import investment_data
-
+from model import scraper
 
 class MainScreenController:
     def __init__(self):
@@ -8,7 +8,9 @@ class MainScreenController:
         and receives results from calculator class."""
 
         self.investment_data = investment_data.InvestmentData()
+        self.scraper = scraper.Scraper(self.investment_data)
         self.calculator = calculator.Calculator(self.investment_data)
+
 
     def get_investment_data(self, data):
         """parse data and send it to calculator"""
@@ -53,17 +55,18 @@ class MainScreenController:
 
     def is_title_valid(self, title, message_box):
         """Checks to see if the investment title is valid or not"""
-        if len(title) != 0 and self.investment_data.get_investment_data() == False:
+        if len(title) != 0 and self.scraper.get_investment_data() == False:
             message_box.showwarning("Invalid investment title",
                                     "Please enter a valid investment title or enter following information manually")
 
     def get_investment_information(self):
         """Send investment data from investment_data to the screen"""
 
-        return self.investment_data.get_investment_data()
+        return self.scraper.get_investment_data()
 
     def is_entry_box_empty(self, title, message_box):
         """Checks to see if the investment title entry box is empty or not, if yes, send a message"""
 
         if len(title) == 0:
             message_box.showwarning("Empty entry", "In order to update investment data, please enter investment title")
+

@@ -18,6 +18,9 @@ Feature that I will work on next: <br/>
 
 Photo demonstration will be provided once the project is completed.
 
+Project outline:
+![project_outline](view/images/outline.png)
+
 image sources:
 
 <a href="https://www.flaticon.com/free-icons/investment" title="investment icons">Investment icons created by justicon -

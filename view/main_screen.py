@@ -53,7 +53,7 @@ class MainScreen(tkinter.Tk):
             {"message": "Investing Title:", "row": 1, "column": 0},
             {"message": "Please enter the following information for the investment", "row": 3, "column": 0,
              "columnspan": 2},
-            {"message": "Start Year:", "row": 4, "column": 0},
+            {"message": "Start Year:", "row": 2, "column": 0},
             {"message": "Start year Price:", "row": 5, "column": 0},
             {"message": "Current Price", "row": 6, "column": 0},
             {"message": "Dividend Yield:", "row": 7, "column": 0},
@@ -77,14 +77,14 @@ class MainScreen(tkinter.Tk):
 
         # Storing combo box information in a list.
         self.combobox_info = [
-            {"value": self.years_before_now, "row": 4, "column": 1},
+            {"value": self.years_before_now, "row": 2, "column": 1},
             {"value": self.dividend_frequency, "row": 8, "column": 1},
             {"value": self.investing_frequency, "row": 10, "column": 1},
         ]
 
         # Storing button information in a list.
         self.buttons_info = [
-            {"message": "Update", "row": 2, "column": 1, "button_index": 0},
+            {"message": "Update", "row": 4, "column": 1, "button_index": 0},
             {"message": "Calculate", "row": 13, "column": 0, "button_index": 1},
             {"message": "Reset", "row": 13, "column": 1, "button_index": 2}
         ]
