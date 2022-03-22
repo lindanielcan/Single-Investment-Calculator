@@ -178,7 +178,7 @@ class MainScreen(tkinter.Tk):
         self.controller.get_result()
 
     def update_investment_data(self):
-        """Automatically update investment data on the screen."""
+        """When update button is clicked, automatically update investment data on the screen."""
 
         # Check if the investment title entry box is empty or not
         self.controller.is_entry_box_empty(self.entry_boxes[0].get(), messagebox)
