@@ -2,6 +2,7 @@ from model import calculator
 from model import investment_data
 from model import scraper
 
+
 class MainScreenController:
     def __init__(self):
         """This class receives data from the main screen, sends data to model files,
@@ -10,16 +11,6 @@ class MainScreenController:
         self.investment_data = investment_data.InvestmentData()
         self.scraper = scraper.Scraper(self.investment_data)
         self.calculator = calculator.Calculator(self.investment_data)
-
-
-    def get_investment_data(self, data):
-        """parse data and send it to calculator"""
-
-        self.investment_data.parse_data(data)
-
-    def get_result(self):
-        """Gets data from the calculator class and sends it main screen."""
-        return self.calculator.calculate_investment_total_return()
 
     def is_all_entry_boxes_filled(self, data):
         """Checks to see if all the entry boxes were filled."""
@@ -44,14 +35,15 @@ class MainScreenController:
         else:
             return True
 
-    def get_investment_title(self, title):
+    def get_investment_title_and_start_year(self, title, year):
         """
         Gets investment title from the main screen and send it to investment_data
         :param title: investment_title
-        :return: a dictionary containing investment information
+        :param title: investment start year
         """
         # If the title entry is empty, prompt a window telling the user to enter the investment title.
         self.investment_data.investment_title = title
+        self.investment_data.investment_start_year = year
 
     def is_title_valid(self, title, message_box):
         """Checks to see if the investment title is valid or not"""
@@ -69,4 +61,3 @@ class MainScreenController:
 
         if len(title) == 0:
             message_box.showwarning("Empty entry", "In order to update investment data, please enter investment title")
-

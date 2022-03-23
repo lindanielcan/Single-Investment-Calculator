@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
+
 class Scraper:
     def __init__(self, investment_data):
         """This class is responsible to scrape data from the internet."""
@@ -83,8 +84,8 @@ class Scraper:
             soup = BeautifulSoup(new_connection.text, 'html.parser')
 
             self.data.investment_data['investment_expense_ratio'] = (soup.find_all('td',
-                                                                              'py-[1px] sm:py-2 px-1 whitespace-nowrap text-left sm:text-right text-base sm:text-small font-semibold')[
-                                                                    2].get_text())
+                                                                                   'py-[1px] sm:py-2 px-1 whitespace-nowrap text-left sm:text-right text-base sm:text-small font-semibold')[
+                                                                         2].get_text())
 
         else:
             self.data.investment_data['investment_expense_ratio'] = 0
@@ -99,10 +100,12 @@ class Scraper:
             soup = BeautifulSoup(new_connection.text, 'html.parser')
             # Storing all the historical price data into a list.
             my_list = soup.find_all("td")
+
             for item in my_list:
                 if self.data.investment_start_year in item:
-                    print(my_list[my_list.index(item) + 1].get_text().strip('>'))
-                    print("here")
-            # print(my_list)
+                    self.data.investment_data['investment_start_year_price'] = round(float(my_list[my_list.index(item) + 1].get_text().strip('>')),2)
+
         else:
             return None
+
+        new_connection.close()

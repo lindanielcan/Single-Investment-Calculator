@@ -3,7 +3,6 @@ from tkinter import ttk
 import os, sys
 import datetime
 from tkinter import messagebox
-from functools import partial
 from PIL import ImageTk, Image
 from view import result_screen
 
@@ -13,6 +12,7 @@ os.chdir(script_path)
 sys.path.append("..")
 
 from controller import main_screen_controller
+from controller import result_screen_controller
 
 BACKGROUND_COLOR = '#BFFFF0'
 
@@ -22,19 +22,23 @@ class MainScreen(tkinter.Tk):
         super().__init__()
         """This class inherits everything from tkinter.Tk and is responsible for creating a main screen,
         it takes user inputs and send it to controller class."""
-        # Initialize main screen controller.
-        self.controller = main_screen_controller.MainScreenController()
         self.title('Single Investment Calculator')
         self.geometry('600x500')
         self.config(bg=BACKGROUND_COLOR)
+
+        self.main_screen_controller = main_screen_controller.MainScreenController()
+        self.result_screen_controller = result_screen_controller.ResultScreenController()
+        self.result_screen = result_screen.ResultScreen(self)
+
         self.dividend_frequency = ['Monthly', 'Quarterly', 'Yearly']
         self.investing_frequency = ['weekly', 'bi-weekly', 'monthly', 'bi-monthly', 'Quarterly', 'yearly']
         self.entry_boxes = []
         self.comboboxes = []
         self.buttons = []
+
         self.years_before_now = [datetime.datetime.now().year - year for year in range(0, 41)]
         self.years_before_now.reverse()
-        self.result_screen = result_screen.ResultScreen(self)
+
 
         # creats a canva to store and display an image.
         self.my_canva = tkinter.Canvas(self, bg=BACKGROUND_COLOR, width=550, height=150,
@@ -156,42 +160,39 @@ class MainScreen(tkinter.Tk):
         if n == 0:
             self.update_investment_data()
 
-            self.result_screen.open()
         # Sends data from the screen to the controller when calculate button is pressed.
         elif n == 1:
             data = [self.entry_boxes, self.comboboxes]
             # Checks if all the boxes were filled.
-            if self.controller.is_all_entry_boxes_filled(data):
+            if self.main_screen_controller.is_all_entry_boxes_filled(data):
                 messagebox.showwarning("Empty text box", "Please fill all the text entries.")
             else:
-                # Validates data, if data is valid, then send it to controller.
-                if self.controller.is_float(data, messagebox):
-                    self.controller.get_investment_data(data)
-            # Gets results from the controller.
-            self.controller.get_result()
+                # Validates data, if data is valid, then send it to result screen controller.
+                if self.main_screen_controller.is_float(data, messagebox):
+                    self.result_screen_controller.get_investment_data(data)
+
+
 
         elif n == 2:
             self.reset_widget_text()
-
-    def get_result_from_controller(self):
-        """Receives data from controller."""
-        self.controller.get_result()
 
     def update_investment_data(self):
         """When update button is clicked, automatically update investment data on the screen."""
 
         # Check if the investment title entry box is empty or not
-        self.controller.is_entry_box_empty(self.entry_boxes[0].get(), messagebox)
+        self.main_screen_controller.is_entry_box_empty(self.entry_boxes[0].get(), messagebox)
 
-        self.controller.get_investment_title(self.entry_boxes[0].get())
+        self.main_screen_controller.get_investment_title_and_start_year(self.entry_boxes[0].get(), self.comboboxes[0].get())
 
         # Check if the investment title is valid or not.
-        self.controller.is_title_valid(self.entry_boxes[0].get(), messagebox)
+        self.main_screen_controller.is_title_valid(self.entry_boxes[0].get(), messagebox)
 
         # get automatic data from the internet.
-        data = self.controller.get_investment_information()
+        data = self.main_screen_controller.get_investment_information()
 
         self.comboboxes[1].set(data['investment_divident_frequency'])
+        self.entry_boxes[1].delete('0', 'end')
+        self.entry_boxes[1].insert(0, data['investment_start_year_price'])
         self.entry_boxes[3].delete('0', 'end')
         self.entry_boxes[3].insert(0, data['investment_dividend_yield'])
         self.entry_boxes[2].delete('0', 'end')
@@ -208,3 +209,8 @@ class MainScreen(tkinter.Tk):
             text.delete('0', 'end')
         for box in self.comboboxes:
             box.set('')
+
+    def get_result_from_controller(self):
+        """Receives data from controller."""
+        self.result_screen.open()
+        self.result_screen_controller.get_result()
