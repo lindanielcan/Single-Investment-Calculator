@@ -1,5 +1,6 @@
 from model import calculator
 from model import investment_data
+from model import scraper
 
 
 class MainScreenController:
@@ -8,16 +9,7 @@ class MainScreenController:
         and receives results from calculator class."""
 
         self.investment_data = investment_data.InvestmentData()
-        self.calculator = calculator.Calculator(self.investment_data)
-
-    def get_investment_data(self, data):
-        """parse data and send it to calculator"""
-
-        self.investment_data.parse_data(data)
-
-    def get_result(self):
-        """Gets data from the calculator class and sends it main screen."""
-        return self.calculator.calculate_investment_total_return()
+        self.scraper = scraper.Scraper(self.investment_data)
 
     def is_all_entry_boxes_filled(self, data):
         """Checks to see if all the entry boxes were filled."""
@@ -42,28 +34,29 @@ class MainScreenController:
         else:
             return True
 
-    def get_investment_title(self, title):
+    def get_investment_title_and_start_year(self, title, year):
         """
         Gets investment title from the main screen and send it to investment_data
         :param title: investment_title
-        :return: a dictionary containing investment information
+        :param title: investment start year
         """
         # If the title entry is empty, prompt a window telling the user to enter the investment title.
         self.investment_data.investment_title = title
+        self.investment_data.investment_start_year = year
 
     def is_title_valid(self, title, message_box):
         """Checks to see if the investment title is valid or not"""
-        if len(title) != 0 and self.investment_data.get_investment_data() == False:
+        if len(title) != 0 and self.scraper.get_investment_data() == False:
             message_box.showwarning("Invalid investment title",
                                     "Please enter a valid investment title or enter following information manually")
 
     def get_investment_information(self):
         """Send investment data from investment_data to the screen"""
 
-        return self.investment_data.get_investment_data()
+        return self.scraper.get_investment_data()
 
     def is_entry_box_empty(self, title, message_box):
-        """Checks to see if the investment title entry box is emptry or not, if yes, send a message"""
+        """Checks to see if the investment title entry box is empty or not, if yes, send a message"""
 
         if len(title) == 0:
             message_box.showwarning("Empty entry", "In order to update investment data, please enter investment title")
