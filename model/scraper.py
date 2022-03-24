@@ -23,7 +23,7 @@ class Scraper:
         url = "https://stockanalysis.com/" + stock_type + self.data.investment_title + "/dividend/"
 
         connection = requests.get(url, headers=self.headers)
-
+        print(connection.status_code)
         if connection.status_code == 200:
 
             soup = BeautifulSoup(connection.text, 'html.parser')

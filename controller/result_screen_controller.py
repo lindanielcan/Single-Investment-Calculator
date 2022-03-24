@@ -19,3 +19,8 @@ class ResultScreenController:
         self.data.parse_data(data)
         self.calculator = calculator.Calculator(self.data)
 
+    def get_calculated_data(self):
+        """
+        Gets calculated results.
+        """
+        return self.calculator.get_results()

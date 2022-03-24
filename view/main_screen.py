@@ -211,6 +211,6 @@ class MainScreen(tkinter.Tk):
         else:
             # Validates data, if data is valid, then send it to result screen controller.
             if self.main_screen_controller.is_float(data, messagebox):
-                self.result_screen.get_investment_data(data)
+                self.result_screen.set_investment_data(data)
                 self.result_screen.open()
 

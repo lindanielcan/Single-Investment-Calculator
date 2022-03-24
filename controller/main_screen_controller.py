@@ -10,7 +10,6 @@ class MainScreenController:
 
         self.investment_data = investment_data.InvestmentData()
         self.scraper = scraper.Scraper(self.investment_data)
-        self.calculator = calculator.Calculator(self.investment_data)
 
     def is_all_entry_boxes_filled(self, data):
         """Checks to see if all the entry boxes were filled."""
