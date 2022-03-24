@@ -16,12 +16,9 @@ Features of each buttons explained below:
 Feature that I will work on next: <br/>
 
 * Better UI design.
-* Use web scraper to get price history of the investment.
 * Use SQLite to store users input
 * Create data validations in the controller file.
 * Instead of single window, maybe create a multi-layer window for user to input multiple investment all at one.
-* Create a result window, and maybe import some popular investment from the market and compare it with the investment
-  user inputted with a chart.
 
 Photo demonstrations are provided below:
 
