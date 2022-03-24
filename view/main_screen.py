@@ -23,7 +23,7 @@ class MainScreen(tkinter.Tk):
         """This class inherits everything from tkinter.Tk and is responsible for creating a main screen,
         it takes user inputs and send it to controller class."""
         self.title('Single Investment Calculator')
-        self.geometry('600x500')
+        self.geometry('550x500')
         self.config(bg=BACKGROUND_COLOR)
 
         self.main_screen_controller = main_screen_controller.MainScreenController()
@@ -54,17 +54,17 @@ class MainScreen(tkinter.Tk):
         # Storing label information in a list.
         self.label_info = [
             {"message": "Investing Title:", "row": 1, "column": 0},
-            {"message": "Please enter the following information for the investment", "row": 3, "column": 0,
+            {"message": "Please enter the following information for the investment:", "row": 3, "column": 0,
              "columnspan": 2},
             {"message": "Start Year:", "row": 2, "column": 0},
             {"message": "Start year Price:", "row": 5, "column": 0},
-            {"message": "Current Price", "row": 6, "column": 0},
+            {"message": "Current Price:", "row": 6, "column": 0},
             {"message": "Dividend Yield:", "row": 7, "column": 0},
             {"message": "Dividend Yield Frequency:", "row": 8, "column": 0},
             {"message": "Expense Ratio:", "row": 9, "column": 0},
             {"message": "Investing Frequency:", "row": 10, "column": 0},
-            {"message": "Investing Amount By Frequency", "row": 11, "column": 0},
-            {"message": "Intended year of investing: ", "row": 12, "column": 0},
+            {"message": "Investing Amount By Frequency:", "row": 11, "column": 0},
+            {"message": "Intended year of investing:", "row": 12, "column": 0},
         ]
 
         # Storing entry box information in a list.
@@ -95,9 +95,9 @@ class MainScreen(tkinter.Tk):
         # running loops through lists to display widgets.
         for label in self.label_info:
             if self.label_info.index(label) != 1:
-                self.show_label(label['message'], label['row'], label['column'])
+                self.show_label(label['message'], label['row'], label['column'], tkinter.E)
             else:
-                self.show_label(label['message'], label['row'], label['column'], label['columnspan'])
+                self.show_label(label['message'], label['row'], label['column'], tkinter.N, label['columnspan'])
 
         for entry_box in self.entry_box_info:
             self.show_entry_box(entry_box['row'], entry_box['column'])
@@ -106,17 +106,28 @@ class MainScreen(tkinter.Tk):
             self.show_combobox(combobox['value'], combobox['row'], combobox['column'])
 
         for button in range(0, len(self.buttons_info)):
-            self.show_button(self.buttons_info[button]['message'], self.buttons_info[button]['row'],
-                             self.buttons_info[button]['column'], self.buttons_info[button]['button_index'])
+            if button == 0:
+                self.show_button(self.buttons_info[button]['message'], self.buttons_info[button]['row'],
+                                 self.buttons_info[button]['column'], self.buttons_info[button]['button_index'],
+                                 tkinter.W)
+            elif button == 1:
+                self.show_button(self.buttons_info[button]['message'], self.buttons_info[button]['row'],
+                                 self.buttons_info[button]['column'], self.buttons_info[button]['button_index'],
+                                 tkinter.N)
+            elif button == 2:
+                self.show_button(self.buttons_info[button]['message'], self.buttons_info[button]['row'],
+                                 self.buttons_info[button]['column'], self.buttons_info[button]['button_index'],
+                                 tkinter.W)
 
-    def show_label(self, text, row, col, columnspan=1):
+    def show_label(self, text, row, col, button_widget_direction, columnspan=1):
         """
         Creates a label and display it on the screen
         :param row: label row index
         :param col: label row index
         """
         tkinter.Label(self, text=text, bg=BACKGROUND_COLOR, anchor="w",
-                      font=('Arial', 10, 'bold',)).grid(row=row, column=col, columnspan=columnspan)
+                      font=('Arial', 10, 'bold',)).grid(row=row, column=col, columnspan=columnspan,
+                                                        sticky=button_widget_direction)
 
     def show_entry_box(self, row, col):
         """
@@ -125,7 +136,7 @@ class MainScreen(tkinter.Tk):
         :param col: entry box row index
         """
         entry_box = tkinter.Entry(self, width=20, justify='center')
-        entry_box.grid(row=row, column=col)
+        entry_box.grid(row=row, column=col, sticky=tkinter.W)
         self.entry_boxes.append(entry_box)
 
     def show_combobox(self, value, row, col):
@@ -135,12 +146,12 @@ class MainScreen(tkinter.Tk):
         :param col: combobox coloumn index
         :param value: combobox text value in a list.
         """
-        frequency_box = ttk.Combobox(self, value=value, justify='center')
+        frequency_box = ttk.Combobox(self, value=value, justify='center', width=17)
         frequency_box.set("")
-        frequency_box.grid(row=row, column=col)
+        frequency_box.grid(row=row, column=col, sticky=tkinter.W)
         self.comboboxes.append(frequency_box)
 
-    def show_button(self, text, row, col, i):
+    def show_button(self, text, row, col, i, button_widget_direction):
         """
         Creates a button and display it on the screen
         :param row: button row index
@@ -151,7 +162,7 @@ class MainScreen(tkinter.Tk):
                                 command=lambda: self.OnButtonClick(i))
 
         self.buttons.append(button)
-        button.grid(row=row, column=col)
+        button.grid(row=row, column=col, sticky=button_widget_direction)
 
     def OnButtonClick(self, n):
         """Performs functions when a specific button is pressed."""
@@ -213,4 +224,3 @@ class MainScreen(tkinter.Tk):
             if self.main_screen_controller.is_float(data, messagebox):
                 self.result_screen.set_investment_data(data)
                 self.result_screen.open()
-
