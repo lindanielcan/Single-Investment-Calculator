@@ -39,7 +39,6 @@ class MainScreen(tkinter.Tk):
         self.years_before_now = [datetime.datetime.now().year - year for year in range(0, 41)]
         self.years_before_now.reverse()
 
-
         # creats a canva to store and display an image.
         self.my_canva = tkinter.Canvas(self, bg=BACKGROUND_COLOR, width=550, height=150,
                                        highlightbackground=BACKGROUND_COLOR)
@@ -158,31 +157,23 @@ class MainScreen(tkinter.Tk):
         """Performs functions when a specific button is pressed."""
         # Fills in investment data when update button is pressed.
         if n == 0:
-            self.update_investment_data()
+            self.update_button_pressed()
 
         # Sends data from the screen to the controller when calculate button is pressed.
         elif n == 1:
-            data = [self.entry_boxes, self.comboboxes]
-            # Checks if all the boxes were filled.
-            if self.main_screen_controller.is_all_entry_boxes_filled(data):
-                messagebox.showwarning("Empty text box", "Please fill all the text entries.")
-            else:
-                # Validates data, if data is valid, then send it to result screen controller.
-                if self.main_screen_controller.is_float(data, messagebox):
-                    self.result_screen_controller.get_investment_data(data)
-
-
+            self.calculate_button_pressed()
 
         elif n == 2:
-            self.reset_widget_text()
+            self.reset_button_pressed()
 
-    def update_investment_data(self):
+    def update_button_pressed(self):
         """When update button is clicked, automatically update investment data on the screen."""
 
         # Check if the investment title entry box is empty or not
         self.main_screen_controller.is_entry_box_empty(self.entry_boxes[0].get(), messagebox)
 
-        self.main_screen_controller.get_investment_title_and_start_year(self.entry_boxes[0].get(), self.comboboxes[0].get())
+        self.main_screen_controller.get_investment_title_and_start_year(self.entry_boxes[0].get(),
+                                                                        self.comboboxes[0].get())
 
         # Check if the investment title is valid or not.
         self.main_screen_controller.is_title_valid(self.entry_boxes[0].get(), messagebox)
@@ -200,17 +191,26 @@ class MainScreen(tkinter.Tk):
         self.entry_boxes[4].delete('0', 'end')
         self.entry_boxes[4].insert(0, data['investment_expense_ratio'])
 
-    def reset_widget_text(self):
+    def reset_button_pressed(self):
         """
         Resets widgets text values.
-        :return:
         """
         for text in self.entry_boxes:
             text.delete('0', 'end')
         for box in self.comboboxes:
             box.set('')
 
-    def get_result_from_controller(self):
-        """Receives data from controller."""
-        self.result_screen.open()
-        self.result_screen_controller.get_result()
+    def calculate_button_pressed(self):
+        """
+        Opens result screen and show results.
+        """
+        data = [self.entry_boxes, self.comboboxes]
+        # Checks if all the boxes were filled.
+        if self.main_screen_controller.is_all_entry_boxes_filled(data):
+            messagebox.showwarning("Empty text box", "Please fill all the text entries.")
+        else:
+            # Validates data, if data is valid, then send it to result screen controller.
+            if self.main_screen_controller.is_float(data, messagebox):
+                self.result_screen.get_investment_data(data)
+                self.result_screen.open()
+

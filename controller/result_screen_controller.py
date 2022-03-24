@@ -18,3 +18,4 @@ class ResultScreenController:
 
         self.data.parse_data(data)
         self.calculator = calculator.Calculator(self.data)
+
