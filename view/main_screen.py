@@ -143,6 +143,7 @@ class MainScreen(tkinter.Tk):
         :param row: button row index
         :param col: button coloumn index
         :param text: button text
+        :param i: used to assign identity to each button.
         """
         button = tkinter.Button(self, text=text, width=10, justify='center',
                                 command=lambda: self.OnButtonClick(i))
@@ -151,7 +152,10 @@ class MainScreen(tkinter.Tk):
         button.grid(row=row, column=col)
 
     def OnButtonClick(self, n):
-        """Performs functions when a specific button is pressed."""
+        """
+        Performs functions when a specific button is pressed.
+        :param n: button identity.
+        """
         # Fills in investment data when update button is pressed.
         if n == 0:
             self.update_investment_data()
