@@ -38,12 +38,6 @@ class MainScreenController:
         self.investment_data.investment_title = title
         self.investment_data.investment_start_year = year
 
-    def is_title_valid(self, title, message_box):
-        """Checks to see if the investment title is valid or not"""
-        if len(title) != 0 and self.scraper.get_investment_data() == False:
-            message_box.showwarning("Invalid investment title",
-                                    "Please enter a valid investment title or enter following information manually")
-
     def get_investment_information(self):
         """Send investment data from investment_data to the screen"""
 
@@ -71,6 +65,7 @@ class MainScreenController:
         return is_valid
 
     def check_combobox(self, index, data, messagebox):
+        """Chech each combobox value"""
         if not self.errors.check_empty(data[1][index]):
             messagebox.showwarning(message=self.messages_for_combobox[index])
             return False
@@ -78,6 +73,13 @@ class MainScreenController:
             return True
 
     def check_entry(self, index, data, messagebox):
+        """
+        Check each entry in the main screen.
+        :param index: int - list index
+        :param data: list - widget data
+        :param messagebox:
+        :return: boolean - If all the data are filled and valid, return True
+        """
         if index == 0:
             if not self.errors.check_empty(data[0][index]):
                 messagebox.showwarning(message=self.messages_for_entry_box[index])
@@ -93,5 +95,5 @@ class MainScreenController:
                 return True
 
     def connection_warning(self, messagebox):
-
+        """shows messages for different connection code."""
         self.errors.show_warning_for_code_429(self.scraper.connection_code, messagebox)

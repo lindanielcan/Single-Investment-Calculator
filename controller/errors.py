@@ -39,5 +39,6 @@ class Errors:
             return False
 
     def show_warning_for_code_429(self, code, messagebox):
+        """Check connection code"""
         if code == 429:
             messagebox.showwarning("Please wait a little and try to update the data again.")
