@@ -12,6 +12,7 @@ class Scraper:
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36'
         }
         self.data = investment_data
+        self.connection_code = 0
 
     def get_investment_data(self):
         """
@@ -23,9 +24,10 @@ class Scraper:
         url = "https://stockanalysis.com/" + stock_type + self.data.investment_title + "/dividend/"
 
         connection = requests.get(url, headers=self.headers)
-        print(connection.status_code)
-        if connection.status_code == 200:
 
+        self.connection_code = connection.status_code
+
+        if connection.status_code == 200:
             soup = BeautifulSoup(connection.text, 'html.parser')
             data = soup.find_all('div', 'mt-0.5 text-lg font-semibold bp:text-xl sm:mt-1.5 sm:text-2xl')
 

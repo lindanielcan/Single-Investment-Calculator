@@ -1,6 +1,7 @@
 from model import calculator
 from model import investment_data
 from model import scraper
+from controller import errors
 
 
 class MainScreenController:
@@ -10,29 +11,22 @@ class MainScreenController:
 
         self.investment_data = investment_data.InvestmentData()
         self.scraper = scraper.Scraper(self.investment_data)
+        self.errors = errors.Errors()
+        self.messages_for_entry_box = [
+            "Please check the investment title input is filled and valid.",
+            "Please check the start year price.",
+            "Please check the current price.",
+            "Please check the dividend yield.",
+            "Please check the expense ratio.",
+            "Please check the investing amount by frequency.",
+            "Please check the intended year of investing."
+        ]
 
-    def is_all_entry_boxes_filled(self, data):
-        """Checks to see if all the entry boxes were filled."""
-        for datum in data:
-            for item in datum:
-                if len(item.get()) == 0:
-                    return True
-
-    def is_float(self, data, messagebox):
-        """Checks if the data is convertible to float or not."""
-        new_data = [item.get() for item in data[0]]
-        new_data.pop(0)
-        new_data.append(data[1][0].get())
-        new_data[2] = new_data[2].strip('%')
-        new_data[3] = new_data[3].strip('%')
-
-        try:
-            for item in new_data:
-                item = float(item)
-        except ValueError:
-            messagebox.showwarning("Please check the value", "Please check the value you inputted.")
-        else:
-            return True
+        self.messages_for_combobox = [
+            "Please select a proper start year.",
+            "Please select a proper dividend yield frequency.",
+            "Please select a proper investing frequency."
+        ]
 
     def get_investment_title_and_start_year(self, title, year):
         """
@@ -44,19 +38,62 @@ class MainScreenController:
         self.investment_data.investment_title = title
         self.investment_data.investment_start_year = year
 
-    def is_title_valid(self, title, message_box):
-        """Checks to see if the investment title is valid or not"""
-        if len(title) != 0 and self.scraper.get_investment_data() == False:
-            message_box.showwarning("Invalid investment title",
-                                    "Please enter a valid investment title or enter following information manually")
-
     def get_investment_information(self):
         """Send investment data from investment_data to the screen"""
 
         return self.scraper.get_investment_data()
 
-    def is_entry_box_empty(self, title, message_box):
-        """Checks to see if the investment title entry box is empty or not, if yes, send a message"""
+    def is_all_inputs_valid(self, data, messagebox):
+        """
+        Checks to see if all the inputs are valid.
+        :param data: List - a list containing text value
+        :param messagebox: tkinter.messagebox
+        :return: Boolean - if all the inputs are filled and valid, then it returns true.
+        """
+        is_valid = True
 
-        if len(title) == 0:
-            message_box.showwarning("Empty entry", "In order to update investment data, please enter investment title")
+        for index in range(0, len(data[0])):
+            is_valid = self.check_entry(index, data, messagebox)
+            if not is_valid:
+                break
+
+        for index in range(0, len(data[1])):
+            is_valid = self.check_combobox(index, data, messagebox)
+            if not is_valid:
+                break
+
+        return is_valid
+
+    def check_combobox(self, index, data, messagebox):
+        """Chech each combobox value"""
+        if not self.errors.check_empty(data[1][index]):
+            messagebox.showwarning(message=self.messages_for_combobox[index])
+            return False
+        else:
+            return True
+
+    def check_entry(self, index, data, messagebox):
+        """
+        Check each entry in the main screen.
+        :param index: int - list index
+        :param data: list - widget data
+        :param messagebox:
+        :return: boolean - If all the data are filled and valid, return True
+        """
+        if index == 0:
+            if not self.errors.check_empty(data[0][index]):
+                messagebox.showwarning(message=self.messages_for_entry_box[index])
+                return False
+            else:
+                return True
+        else:
+            if self.errors.check_empty(data[0][index]) == False and self.errors.is_float(
+                    data[0][index]) == False and self.errors.is_not_negative(data[0][index]) == False:
+                messagebox.showwarning(message=self.messages_for_entry_box[index])
+                return False
+            else:
+                return True
+
+    def connection_warning(self, messagebox):
+        """shows messages for different connection code."""
+        self.errors.show_warning_for_code_429(self.scraper.connection_code, messagebox)
