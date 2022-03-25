@@ -185,26 +185,26 @@ class MainScreen(tkinter.Tk):
         """When update button is clicked, automatically update investment data on the screen."""
 
         # Check if the investment title entry box is empty or not
-        self.main_screen_controller.is_entry_box_empty(self.entry_boxes[0].get(), messagebox)
 
-        self.main_screen_controller.get_investment_title_and_start_year(self.entry_boxes[0].get(),
-                                                                        self.comboboxes[0].get())
+        if self.main_screen_controller.is_all_inputs_valid([[self.entry_boxes[0].get()], [self.comboboxes[0].get()]],
+                                                           messagebox):
+            self.main_screen_controller.get_investment_title_and_start_year(self.entry_boxes[0].get(),
+                                                                            self.comboboxes[0].get())
 
-        # Check if the investment title is valid or not.
-        self.main_screen_controller.is_title_valid(self.entry_boxes[0].get(), messagebox)
+            self.main_screen_controller.connection_warning(messagebox)
 
-        # get automatic data from the internet.
-        data = self.main_screen_controller.get_investment_information()
+            # get automatic data from the internet.
+            data = self.main_screen_controller.get_investment_information()
 
-        self.comboboxes[1].set(data['investment_divident_frequency'])
-        self.entry_boxes[1].delete('0', 'end')
-        self.entry_boxes[1].insert(0, data['investment_start_year_price'])
-        self.entry_boxes[3].delete('0', 'end')
-        self.entry_boxes[3].insert(0, data['investment_dividend_yield'])
-        self.entry_boxes[2].delete('0', 'end')
-        self.entry_boxes[2].insert(0, data['investment_current_price'])
-        self.entry_boxes[4].delete('0', 'end')
-        self.entry_boxes[4].insert(0, data['investment_expense_ratio'])
+            self.comboboxes[1].set(data['investment_divident_frequency'])
+            self.entry_boxes[1].delete('0', 'end')
+            self.entry_boxes[1].insert(0, data['investment_start_year_price'])
+            self.entry_boxes[3].delete('0', 'end')
+            self.entry_boxes[3].insert(0, data['investment_dividend_yield'])
+            self.entry_boxes[2].delete('0', 'end')
+            self.entry_boxes[2].insert(0, data['investment_current_price'])
+            self.entry_boxes[4].delete('0', 'end')
+            self.entry_boxes[4].insert(0, data['investment_expense_ratio'])
 
     def reset_button_pressed(self):
         """
@@ -220,11 +220,11 @@ class MainScreen(tkinter.Tk):
         Opens result screen and show results.
         """
         data = [self.entry_boxes, self.comboboxes]
-        # Checks if all the boxes were filled.
-        if self.main_screen_controller.is_all_entry_boxes_filled(data):
-            messagebox.showwarning("Empty text box", "Please fill all the text entries.")
-        else:
-            # Validates data, if data is valid, then send it to result screen controller.
-            if self.main_screen_controller.is_float(data, messagebox):
-                self.result_screen.set_investment_data(data)
-                self.result_screen.open()
+
+        new_data = data.copy()
+        new_data[0] = [value.get() for value in self.entry_boxes]
+        new_data[1] = [value.get() for value in self.comboboxes]
+
+        if self.main_screen_controller.is_all_inputs_valid(new_data, messagebox):
+            self.result_screen.set_investment_data(data)
+            self.result_screen.open()
