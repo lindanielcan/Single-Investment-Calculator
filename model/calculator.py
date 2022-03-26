@@ -108,6 +108,7 @@ class Calculator:
                 # print(total_investment_return)
                 total_investment_return = self.investment_return_with_expense_ratio(total_investment_return)
                 # print(total_investment_return)
+
             if self.investment_data.investment_dividend_yield != 'n/a' and self.investment_data.investment_divident_frequency != 'n/a' and \
                     self.investment_data.investment_divident_frequency != 'Unspecified':
                 total_investment_return = self.investment_return_with_dividend(total_investment_return, day)

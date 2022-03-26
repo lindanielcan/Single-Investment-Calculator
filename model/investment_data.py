@@ -1,6 +1,6 @@
-
 import requests
 from datetime import datetime
+
 
 class InvestmentData:
     def __init__(self):
@@ -19,19 +19,21 @@ class InvestmentData:
         self.current_time = datetime.now().time()
         self.investment_data = {}
 
-
     def parse_data(self, data):
         """Gets the data from the controller and parse it."""
         self.investment_title = data[0][0].get()
         self.investment_start_year = int(data[1][0].get())
-        self.investment_start_year_price = float(data[0][1].get())
-        self.investment_current_price = float(data[0][2].get().strip(','))
-        self.investment_dividend_yield = float(data[0][3].get().strip('%')) / 100
+        self.investment_start_year_price = float(self.is_containing_comma(data[0][1].get()))
+        self.investment_current_price = float(self.is_containing_comma(data[0][2].get()))
+        if self.is_containing_comma(data[0][3].get().strip('%')) == 'n/a':
+            self.investment_dividend_yield = 0
+        else:
+            self.investment_dividend_yield = float(self.is_containing_comma(data[0][3].get().strip('%'))) / 100
         self.investment_divident_frequency = (data[1][1].get())
         self.investment_expense_ratio = float(data[0][4].get().strip('%')) / 100
         self.investment_frequency = data[1][2].get()
-        self.investment_amount_by_frequency = float(data[0][5].get())
-        self.investment_intended_years = int(data[0][6].get())
+        self.investment_amount_by_frequency = float(self.is_containing_comma(data[0][5].get()))
+        self.investment_intended_years = int(self.is_containing_comma(data[0][6].get()))
 
     def is_market_trading_hour(self):
         """Finds out if current time during market trading hour or not."""
@@ -43,3 +45,11 @@ class InvestmentData:
             return True
         else:
             return False
+
+    def is_containing_comma(self, text):
+        """If the input such as 1,000, strip the comma in the string"""
+
+        if ',' in text:
+            text = text.replace(',', '')
+
+        return text
