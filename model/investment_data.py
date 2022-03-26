@@ -25,7 +25,7 @@ class InvestmentData:
         self.investment_title = data[0][0].get()
         self.investment_start_year = int(data[1][0].get())
         self.investment_start_year_price = float(data[0][1].get())
-        self.investment_current_price = float(data[0][2].get())
+        self.investment_current_price = float(data[0][2].get().strip(','))
         self.investment_dividend_yield = float(data[0][3].get().strip('%')) / 100
         self.investment_divident_frequency = (data[1][1].get())
         self.investment_expense_ratio = float(data[0][4].get().strip('%')) / 100
